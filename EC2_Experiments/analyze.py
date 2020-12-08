@@ -32,19 +32,20 @@ for line in f:
     else:
         d[aux[0]] = d[aux[0]] + [float(aux[1])]
 
-# remove_max(d)
-# remove_max(d)
-# plot_all(d)
+
+plot_all(d)
 
 average_times = []
 for each in d.keys():
     average_times.append(sum(d[each])/len(d[each]))
-    # plt.plot(d[each])
-    # plt.xlabel("Iterations")
-    # plt.ylabel("Time Taken (s)")
-    # plt.title(name + " - Time Taken per Iteration")
-    # plt.grid()
-    # plt.show()
+    plt.plot(d[each])
+    plt.xlabel("Iterations")
+    plt.ylabel("Time Taken (s)")
+    plt.title(name + " - Time Taken per Iteration")
+    plt.grid()
+    plt.show()
+
+print(max(average_times))
 
 mean_average = statistics.mean(average_times)
 median_average = statistics.median(average_times)
