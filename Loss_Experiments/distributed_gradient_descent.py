@@ -10,12 +10,16 @@ def iterate(f, X, y, w, bucket, alpha=0.0001):
     e = bucket[1]
     return np.multiply((alpha/X.shape[0]), f(X[s:e], y[s:e], w))
 
-def run(N=10, time_stop=0, dataset="boston"):
+def run(N=10, time_stop=0, dataset="boston", alpha=0.0001):
     data               = get_dataset(dataset)
     X_, y              = data.data, data.target 
     X                  = np.ones((X_.shape[0], X_.shape[1] + 1))
     X[:,:-1]           = X_  
     X                  = np.divide((X - np.mean(X)),np.std(X))
+    np.random.seed(42)
+    np.random.shuffle(X)
+    np.random.seed(42)
+    np.random.shuffle(y)
     X_test             = X[:int(X.shape[0]/2)]
     X                  = X[int(X.shape[0]/2):X.shape[0]]
     y_test             = y[:int(y.size/2)]
@@ -33,7 +37,7 @@ def run(N=10, time_stop=0, dataset="boston"):
         t = 0
         for each in buckets:
             start_time = time.time()
-            g         += iterate(least_square_loss, X, y, w, each)
+            g         += iterate(least_square_loss, X, y, w, each, alpha=alpha)
             t_         = time.time() - start_time 
             if t == 0 or t > t_:
                 t = t_

@@ -14,6 +14,10 @@ def run():
     X         = np.ones((X_.shape[0], X_.shape[1] + 1))
     X[:,:-1]  = X_  
     X         = np.divide((X - np.mean(X)),np.std(X))
+    np.random.seed(42)
+    np.random.shuffle(X)
+    np.random.seed(42)
+    np.random.shuffle(y)
     w         = np.random.rand(X.shape[1])
     loss_arr  = [get_absolute_loss(X, y, w)]
     for i in range(1000):
