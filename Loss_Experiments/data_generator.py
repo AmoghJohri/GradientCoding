@@ -19,6 +19,6 @@ def get_dataset(s="boston"):
         print("Invalid Option!")
 
 if __name__ == "__main__":
-    data = get_dataset("iris")
+    data = get_dataset("digits")
     X, y = data.data, data.target
-    print(y)
+    print(y.tolist())

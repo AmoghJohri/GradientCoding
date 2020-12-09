@@ -1,6 +1,7 @@
 import time
 import numpy             as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from numpy.core.numeric import indices 
 from data_generator import get_dataset
 from util           import get_absolute_loss
 from util           import least_square_loss
@@ -26,21 +27,54 @@ def iterate(f, X, y, w, bucket, alpha=0.0001):
     e = bucket[1]
     return np.multiply((alpha/X.shape[0]), f(X[s:e], y[s:e], w))
 
-def run(N=10, s_ratio=0.1, pss=0.8, pns=0.01, k=2, time_stop=0, dataset="boston", alpha=0.0001):
+def run(N=10, s_ratio=0.1, pss=0.8, pns=0.01, k=2, time_stop=0, dataset="boston", alpha=0.0001, adversarial=False):
     N                  = int(N/k)
     data               = get_dataset(dataset)
     X_, y              = data.data, data.target 
     X                  = np.ones((X_.shape[0], X_.shape[1] + 1))
     X[:,:-1]           = X_  
     X                  = np.divide((X - np.mean(X)),np.std(X))
-    np.random.seed(42)
-    np.random.shuffle(X)
-    np.random.seed(42)
-    np.random.shuffle(y)
-    X_test             = X[:int(X.shape[0]/2)]
-    X                  = X[int(X.shape[0]/2):X.shape[0]]
-    y_test             = y[:int(y.size/2)]
-    y                  = y[int(y.size/2):y.size]
+    if not adversarial:
+        np.random.seed(42)
+        np.random.shuffle(X)
+        np.random.seed(42)
+        np.random.shuffle(y)
+        X_test             = X[:int(X.shape[0]/2)]
+        X                  = X[int(X.shape[0]/2):X.shape[0]]
+        y_test             = y[:int(y.size/2)]
+        y                  = y[int(y.size/2):y.size]
+    else:
+        indices            = y.argsort()
+        y_sorted           = y[indices[::-1]]
+        X_sorted           = X[indices[::-1]]
+        if ((np.unique(y)).size) <= 10:
+            train_size = int((y.size/np.unique(y).size)/2)
+            X_train            = []
+            y_train            = []
+            X_test             = []
+            y_test             = []
+            counter            = 0
+            for i in range(y.size):
+                if counter < train_size:
+                    X_train.append(X_sorted[counter])
+                    y_train.append(y_sorted[counter])
+                else:
+                    X_test.append(X_sorted[counter])
+                    y_test.append(y_sorted[counter])
+                counter += 1
+                if counter > 0 and y_sorted[counter-1] != y_sorted[counter]:
+                    counter = 0
+            X                  = X_train 
+            y                  = y_train 
+        else:
+            X_test             = X
+            y_test             = y
+            X                  = X_sorted 
+            y                  = y_sorted
+        X      = np.asarray(X)
+        y      = np.asarray(y)
+        X_test = np.asarray(X_test)
+        y_test = np.asarray(y_test)
     np.random.seed(0)
     w                  = np.random.rand(X.shape[1])
     loss_arr           = [get_absolute_loss(X_test, y_test, w)]
