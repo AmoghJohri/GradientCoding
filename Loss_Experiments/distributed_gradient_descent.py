@@ -82,7 +82,7 @@ def run(N=10, time_stop=0, dataset="boston", alpha=0.0001, adversarial=False):
             if time_arr[-1] > time_stop:
                 break 
         else:
-            if i == 1000:
+            if i == iteration:
                 break
     return time_arr, loss_arr 
 

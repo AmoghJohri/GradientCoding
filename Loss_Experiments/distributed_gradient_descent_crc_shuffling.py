@@ -27,7 +27,7 @@ def iterate(f, X, y, w, bucket, alpha=0.0001):
     e = bucket[1]
     return np.multiply((alpha/X.shape[0]), f(X[s:e], y[s:e], w))
 
-def run(N=10, s_ratio=0.1, pss=0.8, pns=0.01, k=2, time_stop=0, dataset="boston", alpha=0.0001, adversarial=False):
+def run(N=10, s_ratio=0.1, pss=0.8, pns=0.01, k=2, time_stop=0, dataset="boston", alpha=0.0001, adversarial=False, iteration=1000):
     data               = get_dataset(dataset)
     X_, y              = data.data, data.target 
     X                  = np.ones((X_.shape[0], X_.shape[1] + 1))
@@ -100,10 +100,12 @@ def run(N=10, s_ratio=0.1, pss=0.8, pns=0.01, k=2, time_stop=0, dataset="boston"
             t_         = time.time() - start_time 
             if buckets.index(each) in straggler_arr:
                 if np.random.random() < pss:
-                    SD = np.random.normal(loc=9.0, scale=3.0)
+                    # SD = np.random.normal(loc=9.0, scale=3.0)
+                    SD = 3
             else:
                 if np.random.random() < pns:
-                    SD = np.random.normal(loc=9.0, scale=3.0)
+                    # SD = np.random.normal(loc=9.0, scale=3.0)
+                    SD = 3
             t_    = t_*SD
             k_arr.append(t_)
             if buckets.index(each) != 0 and buckets.index(each) % k == 0:
@@ -121,7 +123,7 @@ def run(N=10, s_ratio=0.1, pss=0.8, pns=0.01, k=2, time_stop=0, dataset="boston"
             if time_arr[-1] > time_stop:
                 break 
         else:
-            if i == 1000:
+            if i == iteration:
                 break
     return time_arr, loss_arr 
 
